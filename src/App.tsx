@@ -1,115 +1,73 @@
-import { useState } from 'react';
-import { Photo } from './types';
+import { useRef } from 'react';
+import { PHOTOS } from './photos';
 
-
-
-const PHOTOS: Photo[] = [
-  {
-    id: 1,
-    url: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=600',
-    title: 'Memory 1',
-  },
-  {
-    id: 2,
-    url: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=600',
-    title: 'Memory 2',
-  },
-  {
-    id: 3,
-    url: 'https://images.pexels.com/photos/1308881/pexels-photo-1308881.jpeg?auto=compress&cs=tinysrgb&w=600',
-    title: 'Memory 3',
-  },
-  {
-    id: 4,
-    url: 'https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=600',
-    title: 'Memory 4',
-  },
-  {
-    id: 5,
-    url: 'https://images.pexels.com/photos/1761279/pexels-photo-1761279.jpeg?auto=compress&cs=tinysrgb&w=600',
-    title: 'Memory 5',
-  },
-  {
-    id: 6,
-    url: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=600',
-    title: 'Memory 6',
-  },
-  {
-    id: 7,
-    url: 'https://images.pexels.com/photos/3965857/pexels-photo-3965857.jpeg?auto=compress&cs=tinysrgb&w=600',
-    title: 'Memory 7',
-  },
-  {
-    id: 8,
-    url: 'https://images.pexels.com/photos/1181472/pexels-photo-1181472.jpeg?auto=compress&cs=tinysrgb&w=600',
-    title: 'Memory 8',
-  },
-];
+const isVideo = (url: string) => /\.(mp4|webm|ogg|mov)$/i.test(url);
 
 function App() {
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const selectedPhoto = PHOTOS.find((p) => p.id === selectedId);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl sm:text-6xl font-bold text-slate-900 mb-4">
-            sricharan bidai yojana 🫡🥺😞
-          </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            A collection of memories from before the big California adventure. We'll miss you!
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-          {PHOTOS.map((photo) => (
-            <div
-              key={photo.id}
-              onClick={() => setSelectedId(photo.id)}
-              className="group cursor-pointer relative overflow-hidden rounded-lg aspect-square shadow-md hover:shadow-xl transition-shadow duration-300"
-            >
-              <img
-                src={photo.url}
-                alt={photo.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300" />
-            </div>
-          ))}
-        </div>
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-center overflow-hidden font-sans">
+      {/* Header */}
+      <div className="px-6 py-8 text-center">
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-slate-800">
+          sricharan bidai yojana 🫡 😭 😞
+        </h1>
+        <p className="text-slate-400 text-sm mt-1">California Bound</p>
       </div>
 
-      {selectedPhoto && (
-        <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
-          onClick={() => setSelectedId(null)}
-        >
+      {/* Carousel Container */}
+      <div
+        ref={scrollRef}
+        className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar px-[10vw] md:px-[25vw] pb-10"
+      >
+        {PHOTOS.map((item) => (
           <div
-            className="max-w-2xl w-full"
-            onClick={(e) => e.stopPropagation()}
+            key={item.id}
+            className="flex-none w-[80vw] md:w-[50vw] snap-center"
           >
-            <div className="bg-white rounded-lg overflow-hidden shadow-2xl">
-              <img
-                src={selectedPhoto.url}
-                alt={selectedPhoto.title}
-                className="w-full h-auto"
-              />
-              <div className="p-6 bg-slate-50">
-                <h2 className="text-2xl font-semibold text-slate-900">
-                  {selectedPhoto.title}
-                </h2>
-                <button
-                  onClick={() => setSelectedId(null)}
-                  className="mt-4 w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-slate-800 transition-colors"
-                >
-                  Close
-                </button>
+            {/* 1. Fixed aspect ratio container (aspect-video or aspect-[4/3]) 
+                2. h-[50vh] ensures it fits vertically on any phone/laptop screen 
+            */}
+            <div className="relative h-[50vh] md:h-[60vh] w-full rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden flex items-center justify-center">
+
+              {isVideo(item.url) ? (
+                <video
+                  src={item.url}
+                  className="max-w-full max-h-full object-contain" // "contain" ensures no cropping
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                />
+              ) : (
+                <img
+                  src={item.url}
+                  alt={item.title}
+                  className="max-w-full max-h-full object-contain p-2" // "contain" ensures full image is visible
+                />
+              )}
+
+              {/* Minimalist Label */}
+              <div className="absolute top-4 right-4 bg-slate-100/80 backdrop-blur-sm px-2 py-1 rounded md text-[10px] font-bold text-slate-500 border border-slate-200">
+                {item.id} / {PHOTOS.length}
               </div>
             </div>
+
+            {/* Title below the card for a cleaner "gallery" look */}
+            <div className="mt-4 px-2">
+              <h2 className="text-sm font-medium text-slate-700">{item.title}</h2>
+            </div>
           </div>
+        ))}
+      </div>
+
+      {/* Progress Line */}
+      <div className="flex justify-center mt-4">
+        <div className="h-1 w-24 bg-slate-200 rounded-full overflow-hidden">
+          <div className="h-full bg-slate-400 w-1/3 animate-pulse" />
         </div>
-      )}
+      </div>
     </div>
   );
 }
